@@ -1,6 +1,7 @@
 import axios from "axios";
 import fs from "fs";
 import util from "util";
+import * as appInsights from "applicationinsights";
 
 const pkg = require("../package.json");
 
@@ -76,4 +77,22 @@ export function isoUTC(iso: string): Date {
         : `${iso}Z`;
 
     return new Date(iso);
+}
+
+export function startAppInsights() {
+    if (!process.env["APPINSIGHTS_INSTRUMENTATIONKEY"]) {
+        console.warn("APPINSIGHTS_INSTRUMENTATIONKEY is not provided");
+        return;
+    }
+
+    // init with default configuration
+    appInsights.setup()
+        .setAutoDependencyCorrelation(false)
+        .setAutoCollectRequests(true)
+        .setAutoCollectPerformance(true)
+        .setAutoCollectExceptions(true)
+        .setAutoCollectDependencies(true)
+        .setAutoCollectConsole(true)
+        .setUseDiskRetryCaching(true)
+        .start();
 }
