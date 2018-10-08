@@ -37,7 +37,7 @@ export class SteemService {
         let nextActionSequence = (params && params.NextActionSequence) || 0;
         
         while (true) {
-            const accHistory = await steem.api.getAccountHistoryAsync(this.settings.SteemJob.HotWalletAccount, nextActionSequence, 0);
+            const accHistory = await steem.api.getAccountHistoryAsync(this.settings.SteemJob.HotWalletAccount, nextActionSequence, 1);
             const action = !!accHistory && !!accHistory.length && accHistory[0][0] == nextActionSequence && accHistory[0][1];
 
             if (!!action && action.block <= globalProperties.last_irreversible_block_num) {
