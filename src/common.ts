@@ -55,7 +55,6 @@ export class Settings {
         HotWalletAccount: string;
         Steem: {
             Url: string;
-            UseAppbaseApi: boolean;
         }
     };
 }

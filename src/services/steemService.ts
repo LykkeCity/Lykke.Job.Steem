@@ -20,7 +20,7 @@ export class SteemService {
     constructor(private settings: Settings, private logService: LogService) {
         steem.api.setOptions({
             url: settings.SteemJob.Steem.Url,
-            useAppbaseApi: settings.SteemJob.Steem.UseAppbaseApi
+            useAppbaseApi: true
         });
         this.paramsRepository = new ParamsRepository(settings);
         this.balanceRepository = new BalanceRepository(settings);
