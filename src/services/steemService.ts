@@ -34,7 +34,7 @@ export class SteemService {
         const params = await this.paramsRepository.get();
         const globalProperties = await steem.api.getDynamicGlobalPropertiesAsync();
         
-        let nextActionSequence = (params && params.NextActionSequence) || 0;
+        let nextActionSequence = (params && params.NextActionSequence) || 1;
         
         while (true) {
             const accHistory = await steem.api.getAccountHistoryAsync(this.settings.SteemJob.HotWalletAccount, nextActionSequence, 1);
