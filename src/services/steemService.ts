@@ -49,7 +49,7 @@ export class SteemService {
                 // in testnet action number within transaction (op_in_trx)
                 // is 0 for all transaction actions due to some errors,
                 // so use global action number as action ID
-                const actionId = nextActionSequence;
+                const actionId = nextActionSequence.toString();
 
                 await this.log(LogLevel.info, `${action.op[0]} action ${!!transfer ? "detected" : "skipped"}`, {
                     Account: this.settings.SteemJob.HotWalletAccount,
