@@ -46,7 +46,10 @@ export class SteemService {
                 const block = action.block * 10;
                 const blockTime = isoUTC(action.timestamp);
                 const txId = action.trx_id;
-                const actionId = action.op_in_trx.toString();
+                // in testnet action number within transaction (op_in_trx)
+                // is 0 for all transaction actions due to some errors,
+                // so use global action number as action ID
+                const actionId = nextActionSequence;
 
                 await this.log(LogLevel.info, `${action.op[0]} action ${!!transfer ? "detected" : "skipped"}`, {
                     Account: this.settings.SteemJob.HotWalletAccount,
