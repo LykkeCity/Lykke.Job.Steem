@@ -157,6 +157,7 @@ export class SteemService {
         for (let i = 0; i < presumablyExpired.length; i++) {
             const operation = await this.operationRepository.get(presumablyExpired[i])
             if (!!operation && !operation.isCompleted() && !operation.isFailed()) {
+                await this.log(LogLevel.warning, "Transaction expired", operation.OperationId);
                 await this.operationRepository.update(operation.OperationId, {
                     errorCode: ErrorCode.buildingShouldBeRepeated,
                     error: "Transaction expired",
