@@ -35,10 +35,15 @@ export class SteemService {
         const globalProperties = await steem.api.getDynamicGlobalPropertiesAsync();
         
         let nextActionSequence = (params && params.NextActionSequence) || 0;
+
+        this.log(LogLevel.info, "NextActionSequence", nextActionSequence);
         
         while (true) {
             const accHistory = await steem.api.getAccountHistoryAsync(this.settings.SteemJob.HotWalletAccount, nextActionSequence, 0);
             const action = !!accHistory && !!accHistory.length && accHistory[0][0] == nextActionSequence && accHistory[0][1];
+
+            this.log(LogLevel.info, "History", accHistory);
+            this.log(LogLevel.info, "Action", action);
 
             if (!!action && action.block <= globalProperties.last_irreversible_block_num) {
                
