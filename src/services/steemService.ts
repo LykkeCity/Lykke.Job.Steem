@@ -1,4 +1,4 @@
-import { Settings, ADDRESS_SEPARATOR, isoUTC } from "../common";
+import { Settings, ADDRESS_SEPARATOR, isoUTC, isSteemAddress } from "../common";
 import { LogService, LogLevel } from "./logService";
 import { AssetRepository } from "../domain/assets";
 import { OperationRepository, ErrorCode } from "../domain/operations";
@@ -105,21 +105,26 @@ export class SteemService {
                                 ? transfer.to + ADDRESS_SEPARATOR + transfer.memo
                                 : transfer.to;
 
-                            // record history
-                            await this.historyRepository.upsert(transfer.from, to, assetId, value, valueInBaseUnit, block, blockTime, txId, actionId, operationId);
-                            await this.log(LogLevel.info, "Transfer recorded", transfer);
+                            if (isSteemAddress(to)) {
+                                // record history
+                                await this.historyRepository.upsert(transfer.from, to, assetId, value, valueInBaseUnit, block, blockTime, txId, actionId, operationId);
+                                await this.log(LogLevel.info, "Transfer recorded", transfer);
 
-                            // record balance changes
-                            const balanceChanges = [
-                                { address: transfer.from, affix: -value, affixInBaseUnit: -valueInBaseUnit },
-                                { address: to, affix: value, affixInBaseUnit: valueInBaseUnit }
-                            ];
-                            for (const bc of balanceChanges) {
-                                await this.balanceRepository.upsert(bc.address, assetId, txId, bc.affix, bc.affixInBaseUnit, block);
-                                await this.log(LogLevel.info, "Balance change recorded", {
-                                    ...bc, assetId, txId
-                                });
-                            }  
+                                // record balance changes
+                                const balanceChanges = [
+                                    { address: transfer.from, affix: -value, affixInBaseUnit: -valueInBaseUnit },
+                                    { address: to, affix: value, affixInBaseUnit: valueInBaseUnit }
+                                ];
+                                for (const bc of balanceChanges) {
+                                    await this.balanceRepository.upsert(bc.address, assetId, txId, bc.affix, bc.affixInBaseUnit, block);
+                                    await this.log(LogLevel.info, "Balance change recorded", {
+                                        ...bc, assetId, txId
+                                    });
+                                }
+                            }
+                            else {
+                                await this.log(LogLevel.warning, "Invalid destination address", to);
+                            }
                         } else {
                             await this.log(LogLevel.warning, "Not tracked token", parts[1]);
                         }
