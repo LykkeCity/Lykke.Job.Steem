@@ -4,6 +4,8 @@ import util from "util";
 import * as appInsights from "applicationinsights";
 
 const pkg = require("../package.json");
+const steem = require("steem");
+const azureKeyInvalidCharsRegExp = /[\/\\#?\n\r\t\u0000-\u001F\u007F-\u009F]/gmi;
 
 export const APP_NAME = pkg.name;
 
@@ -76,6 +78,21 @@ export function isoUTC(iso: string): Date {
         : `${iso}Z`;
 
     return new Date(iso);
+}
+
+export function isSteemAddress(str: string): boolean {
+    if (!str || azureKeyInvalidCharsRegExp.test(str)) {
+        return false;
+    }
+
+    const parts = str.split(ADDRESS_SEPARATOR);
+    const error = steem.utils.validateAccountName(parts[0]);
+
+    if (!!error || (!!parts[1] && parts[1].length > 256)) {
+        return false;
+    }
+
+    return true;
 }
 
 export function startAppInsights() {
